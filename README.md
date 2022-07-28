@@ -4,18 +4,10 @@ This Visual Studio Code extension is based on <https://github.com/tanhakabir/res
 
 ## Features
 
-- Create and run REST Calls within cells.
-- Organize multiple REST Calls within one file.
+- Create and run Select statements for ror from within cells.
+- Organize multiple Select statements within one file.
 - Intermingle markdown for documenting your calls.
-- View rich HTML and image responses directly inside the Notebook.
-- Optionally use the Interactive Window interface.
-- Basic Authentication.
-- Use data from one call in the next.
-- Save API keys and other sensitive information outside of the Notebook to use securely in calls.
 
-## Requirements
-
-Must be using the latest version of Visual Studio Code Insiders edition.
 
 ## Usage
 
