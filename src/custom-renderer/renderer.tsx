@@ -34,7 +34,7 @@ export const Response: FunctionComponent<{ response: Readonly<ResponseRendererEl
 
     var packageData = { type: 'data', data: response.data };
     var packageSummary = { type: 'summary', data: a };
-    var packageAst = { type: 'ast', data: "THIS IS B:" + b };
+    var packageAst = { type: 'ast', data: b };
 
     return <div>
         <Status code={response.status} text={response.statusText} request={response.request} />

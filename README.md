@@ -14,7 +14,6 @@ This Visual Studio Code extension is based on <https://github.com/tanhakabir/res
 1. Create a new file to store your REST Calls with a `.select` ending.
 ![New file creation](docs/images/new-file.gif)
 You can also use the command: `Select Book: Create a new blank Select Notebook`.
-![New file command](docs/images/new-file-command.gif)
 1. Add a code cell by hovering over the middle of the Notebook and clicking the `+ Code`
 
 To use the Interactive Window interface:
