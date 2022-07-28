@@ -1,0 +1,166 @@
+{
+  "name": "select-book",
+  "displayName": "Select Book",
+  "description": "Notebook for running Select queries.",
+  "version": "6.2.1",
+  "publisher": "haubar",
+  "repository": {
+    "url": "https://github.com/haubar/select-book"
+  },
+  "engines": {
+    "vscode": "^1.68.0"
+  },
+  "categories": [
+    "Notebooks"
+  ],
+  "icon": "select-book.png",
+  "activationEvents": [
+    "onNotebook:select-book",
+    "onNotebook:interactive",
+    "onLanguage:select-book",
+    "onCommand:select-book.secrets",
+    "onCommand:select-book.newInteractive",
+    "onCommand:select-book.newNotebook"
+  ],
+  "main": "./dist/extension-node.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "select-book.secrets",
+        "title": "Secrets",
+        "category": "Select Book"
+      },
+      {
+        "command": "select-book.newInteractive",
+        "title": "Create an Interactive Window",
+        "shortTitle": "Interactive Select Window",
+        "category": "Select Book"
+      },
+      {
+        "command": "select-book.newNotebook",
+        "title": "Create a new blank Select Notebook",
+        "shortTitle": "Select Notebook",
+        "category": "Select Book"
+      }
+    ],
+    "menus": {
+      "file/newFile": [
+        {
+          "command": "select-book.newInteractive",
+          "group": "notebook"
+        },
+        {
+          "command": "select-book.newNotebook",
+          "group": "notebook"
+        }
+      ]
+    },
+    "notebookRenderer": [
+      {
+        "id": "select-book",
+        "displayName": "Select Book Renderer",
+        "entrypoint": "./dist/renderer.js",
+        "requiresMessaging": "optional",
+        "mimeTypes": [
+          "x-application/select-book"
+        ]
+      }
+    ],
+    "notebooks": [
+      {
+        "id": "select-book",
+        "type": "select-book",
+        "displayName": "Select Book",
+        "selector": [
+          {
+            "filenamePattern": "*.select"
+          }
+        ]
+      }
+    ],
+    "languages": [
+      {
+        "id": "select-book",
+        "aliases": [
+          "Select Book"
+        ],
+        "filenamePatterns": [
+          "*.select-book.txt"
+        ]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "select-book",
+        "scopeName": "source.select-book",
+        "path": "./syntaxes/select-book.tmGrammar.json",
+        "embeddedLanguages": {
+          "meta.embedded.block.javascript": "javascript",
+          "meta.embedded.block.json": "json",
+          "meta.embedded.block.html": "html",
+          "meta.embedded.block.xml": "xml",
+          "meta.embedded.block.css": "css"
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "webpack --mode none",
+    "watch": "webpack --mode none --watch  --info-verbosity verbose",
+    "lint": "eslint --config .eslintrc.json ./src/**/*.ts",
+    "ts-compile": "tsc -b",
+    "integration-test": "npm run ts-compile && node ./out/extension/test-integration/runTest.js",
+    "unit-test": "npm run ts-compile && npx mocha ./out/extension/test-unit",
+    "compile-lint-test": "npm run compile && npm run lint && npm run unit-test",
+    "precommit": "npm run lint",
+    "deploy": "npx vsce publish --web",
+    "postinstall": "npx vscode-dts main && npx vscode-dts dev"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "@types/lodash": "^4.14.168",
+    "@types/mocha": "^8.2.1",
+    "@types/node": "^12.20.10",
+    "@types/user-home": "^2.0.0",
+    "@types/uuid": "^8.3.0",
+    "@types/vscode": "^1.68.0",
+    "@types/vscode-notebook-renderer": "^1.57.8",
+    "@typescript-eslint/eslint-plugin": "^4.18.0",
+    "@typescript-eslint/parser": "^4.18.0",
+    "axios": "^0.21.1",
+    "css-loader": "^5.1.3",
+    "eslint": "^7.22.0",
+    "glob": "^7.1.6",
+    "json-stringify-safe": "^5.0.1",
+    "mocha": "^10.0.0",
+    "os": "^0.1.1",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
+    "process": "^0.11.10",
+    "style-loader": "^2.0.0",
+    "svg-inline-loader": "^0.8.2",
+    "ts-loader": "^8.0.18",
+    "typescript": "^4.7.3",
+    "url": "^0.11.0",
+    "util": "^0.12.3",
+    "vscode-codicons": "0.0.14",
+    "vscode-dts": "^0.3.2",
+    "vscode-test": "^1.5.1",
+    "webpack": "^5.26.3",
+    "webpack-cli": "^4.5.0"
+  },
+  "dependencies": {
+    "-": "0.0.1",
+    "@types/react": "^17.0.3",
+    "lint": "^1.1.2",
+    "lodash": "^4.17.21",
+    "preact": "^10.5.13",
+    "save-dev": "0.0.1-security",
+    "tsc": "^2.0.4",
+    "user-home": "^2.0.0",
+    "uuid": "^8.3.2",
+    "vsce": "^2.9.1",
+    "vscode": "^0.9.9"
+  }
+}

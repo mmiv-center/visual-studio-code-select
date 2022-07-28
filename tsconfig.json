@@ -1,0 +1,13 @@
+{
+	"references": [
+		{
+			"path": "./src/custom-renderer"
+		},
+		{
+			"path": "./src/common"
+		},
+		{
+			"path": "./src/extension"
+		}
+	]
+}
