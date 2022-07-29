@@ -24,7 +24,8 @@ export const Response: FunctionComponent<{ response: Readonly<ResponseRendererEl
     });
 
     const r_str = JSON.parse(response.data);
-    const a = "For this Select statement we could identify " + r_str['matches'].toString() + " job" + (r_str != 1 ? 's' : '') + ".";
+    var a = "<p>For this Select statement we could identify " + r_str['matches'].toString() + " job" + (r_str != 1 ? 's' : '') + ".</p>";
+    a += r_str['messages'].join('</br>') + ".";
     var b = "";
     if (typeof r_str.ast !== 'undefined')
         b = JSON.stringify(r_str.ast);
@@ -35,6 +36,7 @@ export const Response: FunctionComponent<{ response: Readonly<ResponseRendererEl
     var packageData = { type: 'data', data: response.data };
     var packageSummary = { type: 'summary', data: a };
     var packageAst = { type: 'ast', data: b };
+    var packageInputData = { type: 'input_data', data: JSON.stringify(response.input_data) };
 
     return <div>
         <Status code={response.status} text={response.statusText} request={response.request} />
@@ -53,6 +55,8 @@ export const Response: FunctionComponent<{ response: Readonly<ResponseRendererEl
         <TableTab dict={response.request} active={activeIndex === 3} searchKeyword={searchKeyword} />
         <DataTab data={packageSummary /* a */} active={activeIndex === 4} searchKeyword={searchKeyword} />
         <DataTab data={packageAst /* b */} active={activeIndex === 5} searchKeyword={searchKeyword} />
+        <DataTab data={packageAst /* b */} active={activeIndex === 5} searchKeyword={searchKeyword} />
+        <DataTab data={packageInputData} active={activeIndex === 6} searchKeyword={searchKeyword} />
     </div>;
 };
 
@@ -83,6 +87,9 @@ const TabHeader: FunctionComponent<{ activeTab: number, setActive: (i: number) =
 
         //@ts-ignore
         result.push(<button class='tab' dark-mode={darkMode} onClick={() => setActive(5)} active={activeTab === 5}>AST</button>);
+
+        //@ts-ignore
+        result.push(<button class='tab' dark-mode={darkMode} onClick={() => setActive(6)} active={activeTab === 6}>InputData</button>);
 
         return result;
     };
@@ -156,6 +163,7 @@ const TableTab: FunctionComponent<{ dict?: any, active: boolean, searchKeyword: 
 };
 
 const DataTab: FunctionComponent<{ data: any, active: boolean, searchKeyword: string }> = ({ data, active, searchKeyword }) => {
+    console.log(searchKeyword);
     var type = data.type;
     if (data.type == 'data') {
         data = data.data;
@@ -166,13 +174,75 @@ const DataTab: FunctionComponent<{ data: any, active: boolean, searchKeyword: st
     if (data.type == 'ast') {
         data = data.data;
     }
+    if (data.type == 'input_data') {
+        data = JSON.parse(data.data).DataInfo;
 
+        // get the PatientIDs in the data
+        var patients = [];
+        var studies = Object.keys(data);
+        for (var i = 0; i < studies.length; i++) {
+            var study = data[studies[i]];
+            var series = Object.keys(study);
+            for (var j = 0; j < series.length; j++) {
+                var serie = study[series[j]];
+                var PatientID = serie.PatientID;
+                if (patients.indexOf(PatientID) == -1) {
+                    patients.push(PatientID);
+                }
+            }
+        }
+        //console.log(patients);
+
+        // we should create proper divs for this, perhaps a tree view?
+        var str = "<ul class='list-group'>";
+        for (var pat = 0; pat < patients.length; pat++) {
+            var patient = patients[pat];
+            str += "<div class='list-group-item'>" + patient + " <ul class='list-group'>";
+            var studies = Object.keys(data);
+            for (var i = 0; i < studies.length; i++) {
+                var study = data[studies[i]];
+                var series = Object.keys(study);
+                var PatientID = study[series[0]].PatientID;
+                if (PatientID != patient) {
+                    continue; // do this in another round
+                }
+
+                for (var j = 0; j < series.length; j++) {
+                    var serie = study[series[j]];
+                    var SeriesDescription = serie.SeriesDescription;
+                    var NumImages = serie.NumImages;
+                    var StudyDescription = serie.StudyDescription;
+                    var StudyInstanceUID = serie.StudyInstanceUID;
+                    if (j == 0) {
+                        str += "<div class='list-group-item'>Study \"" + StudyDescription + "\" <ul class='list-group'>";
+                    }
+                    var PatientName = serie.PatientName;
+                    str += "<div class='list-group-item'>Series \"" + SeriesDescription + "\" [" + NumImages + "] " + "</div>";
+                    if (j == series.length - 1) {
+                        str += "</ul></div>";
+                    }
+                }
+            }
+            str += "</ul></div>";
+        }
+        str += "</ul>";
+        data = str;
+        var id2 = 'data-container-' + type;
+        return <div class='tab-content' id={id2} hidden={!active}
+            dangerouslySetInnerHTML={{ __html: data }}
+        ></div>;
+    }
+
+    // generic output
     const dataStr = typeof data === 'string' ? data : stringify(data, null, " ");
     const id = 'data-container-' + type;
 
-    return <div class='tab-content' id={id} hidden={!active}>
-        {searchForTermInText(dataStr, searchKeyword)}
-    </div>;
+    console.log(dataStr);
+
+    // allow html in the text
+    return <div class='tab-content' id={id} hidden={!active}
+        dangerouslySetInnerHTML={{ __html: dataStr }}
+    ></ div>;
 };
 
 const Icon: FunctionComponent<{ name: string }> = ({ name: i }) => {

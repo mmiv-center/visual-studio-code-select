@@ -103,16 +103,25 @@ export class RequestParser {
         this.requestOptions.data = execSync(cmd, { encoding: 'utf8' }).trim();
 
         // we should get the job list as json here as well, we would get ENOBUFS here for any real data as the buffer is not big enough (200kb?)
-        cmd = ror + ' status --jobs';
+        var tmp_fname = '/tmp/tmpForRor.txt';
         var ops = { stdio: [0,0,0], encoding: 'utf8' }
-        var log = require('fs').openSync('/tmp/tmpForRor.txt', 'w');
+        var log = require('fs').openSync(tmp_fname, 'w');
         ops.stdio = [0, log, 0]
-    
         var child = require('child_process').spawnSync(ror, ["status", "--jobs"], ops);
-        var rs = fs.readFileSync('/tmp/tmpForRor.txt', 'utf8');
+        var rs = fs.readFileSync(tmp_fname, 'utf8');
+        var j_tmp_str = !rs ? "" : rs.toString().trim();
+        fs.unlink(tmp_fname, function () { });
 
-        var j_tmp_str = !rs?"":rs.toString().trim();
         
+        tmp_fname = '/tmp/tmpForRor2.txt';
+        ops = { stdio: [0,0,0], encoding: 'utf8' }
+        log = require('fs').openSync(tmp_fname, 'w');
+        ops.stdio = [0, log, 0]
+        child = require('child_process').spawnSync(ror, ["status", "--data"], ops);
+        rs = fs.readFileSync(tmp_fname, 'utf8');
+        var d_tmp_str = !rs ? "" : rs.toString().trim();
+        fs.unlink(tmp_fname, function () { });
+
         /*
         try {
             var j_tmp_str = execSync(cmd, { encoding: 'utf8' }).trim();
@@ -120,9 +129,11 @@ export class RequestParser {
             console.log(e);
         } */
         var j_tmp = JSON.parse(j_tmp_str);
+        var d_tmp = JSON.parse(d_tmp_str);
 
         this.requestOptions.headers = {
             jobs: j_tmp,
+            input_data: d_tmp,
             workSpaceDir: workSpaceDir
         };
         this.requestOptions.ast = JSON.parse(this.requestOptions.data).ast;
