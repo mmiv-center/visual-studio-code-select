@@ -5,6 +5,7 @@ export interface ResponseRendererElements {
     headers?: any | undefined;
     config?: any | undefined;
     request?: any | undefined;
+    input_data?: any | undefined;
     data: any;
 }
 export declare class ResponseParser {
@@ -15,6 +16,7 @@ export declare class ResponseParser {
     private request;
     private data;
     private jobs;
+    private input_data;
     private ast;
     private reqParser;
     constructor(response: any, request: any, reqParser: RequestParser);
@@ -25,6 +27,7 @@ export declare class ResponseParser {
         config: any;
         request: any;
         messages: any;
+        input_data: any;
         data: any;
     };
     html(): string;

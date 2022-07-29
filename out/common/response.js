@@ -43,6 +43,7 @@ export class ResponseParser {
             //this.request = { ...this.request, ...request };
             this.data = res.data;
             this.jobs = res.headers.jobs;
+            this.input_data = res.headers.input_data; // the data before the select statement
             if (typeof res.headers !== 'undefined' && typeof res.headers.ast !== 'undefined')
                 this.ast = res.headers.ast;
             else
@@ -55,11 +56,24 @@ export class ResponseParser {
             if (this.jobs.length == 0) {
                 this.headers['No jobs'] = 'No jobs';
             }
+            if (typeof this.input_data !== 'undefined') {
+                var str = Object.keys(this.input_data.DataInfo).length + " studies, ";
+                var ks = Object.keys(this.input_data.DataInfo);
+                var sum = 0;
+                for (var i = 0; i < ks.length; i++) {
+                    sum += Object.keys(this.input_data.DataInfo[ks[i]]).length;
+                }
+                this.headers['InputData'] = str + sum + " series";
+            }
             for (var i = 0; i < this.jobs.length; i++) {
                 var numStudies = this.jobs[i].length;
                 var numSeries = Object.keys(this.jobs[i]).length;
                 this.headers['job' + i] = "Studies: " + numStudies + " Series: " + numSeries; // number of studies
             }
+            //var Studies = Object.keys(this.input_data);
+            //for (var i = 0; i < Studies.length; i++) {
+            //    this.input_data['input_data' + i] = Object.keys(this.input_data[Studies[i]]).length; // number of series?
+            //}
             this._cleanForSecrets();
         }
         catch {
@@ -84,12 +98,16 @@ export class ResponseParser {
             config: this.config,
             request: this.request,
             messages: d['messages'],
+            input_data: this.input_data,
             data: d
         };
     }
     html() {
         if (typeof this.data !== 'undefined') {
             var json = JSON.stringify(JSON.parse(this.data), null, " ");
+            if (typeof this.input_data !== 'undefined') {
+                json += "<br/><br/>" + JSON.stringify(this.input_data, null, " ");
+            }
             return json;
         }
         return "nothing"; // "<code>" + this.data.replace(/(?:\r\n|\r|\n)/g, '<br>').replace(/ /g, "&nbsp;") + "</code>";
@@ -104,6 +122,7 @@ export class ResponseParser {
             headers: this.headers,
             config: this.config,
             request: this.request,
+            input_data: this.input_data,
             data: this.data
         };
     }
