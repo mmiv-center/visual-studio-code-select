@@ -73,9 +73,15 @@ export class RequestParser {
         // the path of the file active in the editor
         var workSpaceDir = path.dirname(vscode.window.activeTextEditor?.document.uri.fsPath ?? '');
         workSpaceDir = path.normalize(workSpaceDir); // could be "." for the cwd
+        if (workSpaceDir == ".") {
+            // we should resolve this to the current working directory
+            workSpaceDir = process.cwd();
+        }
+
         // we need to know the location of ror as well as the location of the data folder
         var ror = execSync('which ror', { encoding: 'utf8' }).trim();
-        process.chdir(workSpaceDir /* vscode.workspace.rootPath */);
+        if (workSpaceDir != process.cwd())
+            process.chdir(workSpaceDir /* vscode.workspace.rootPath */);
 
         // check if this can be a ror folder (if .ror/config exists)
         if (!fs.existsSync('.ror/config')) {

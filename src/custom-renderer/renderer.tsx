@@ -55,7 +55,6 @@ export const Response: FunctionComponent<{ response: Readonly<ResponseRendererEl
         <TableTab dict={response.request} active={activeIndex === 3} searchKeyword={searchKeyword} />
         <DataTab data={packageSummary /* a */} active={activeIndex === 4} searchKeyword={searchKeyword} />
         <DataTab data={packageAst /* b */} active={activeIndex === 5} searchKeyword={searchKeyword} />
-        <DataTab data={packageAst /* b */} active={activeIndex === 5} searchKeyword={searchKeyword} />
         <DataTab data={packageInputData} active={activeIndex === 6} searchKeyword={searchKeyword} />
     </div>;
 };
@@ -172,7 +171,7 @@ const DataTab: FunctionComponent<{ data: any, active: boolean, searchKeyword: st
         data = data.data;
     }
     if (data.type == 'ast') {
-        data = data.data;
+        data = JSON.parse(data.data);
     }
     if (data.type == 'input_data') {
         data = JSON.parse(data.data).DataInfo;
@@ -240,9 +239,9 @@ const DataTab: FunctionComponent<{ data: any, active: boolean, searchKeyword: st
     console.log(dataStr);
 
     // allow html in the text
-    return <div class='tab-content' id={id} hidden={!active}
+    return <pre><div class='tab-content' id={id} hidden={!active}
         dangerouslySetInnerHTML={{ __html: dataStr }}
-    ></ div>;
+    ></div></pre>;
 };
 
 const Icon: FunctionComponent<{ name: string }> = ({ name: i }) => {
